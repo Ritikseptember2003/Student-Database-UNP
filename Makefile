@@ -1,29 +1,32 @@
 CC = gcc -Wall
-TARGET = 2101_2115
-SRC = src/main.c src/parser.c src/student.c src/course.c
-HEADERS = include/student.h include/course.h include/parser.h
-OBJ = main.o parser.o student.o course.o
 
-# Default target: compile the program
-all: $(TARGET)
+SERVER_TARGET = server
+PARSER_TARGET = parser
 
-# Target to compile the program
-$(TARGET): $(OBJ)
-	$(CC) -o $(TARGET) $(OBJ) -I include
+SERVER_SRC = server.c student.c course.c
+PARSER_SRC = parser.c client.c
 
-# Compile each source file into an object file
-main.o: src/main.c $(HEADERS)
-	$(CC) -c src/main.c -I include
+SERVER_OBJ = $(SERVER_SRC:.c=.o)
+PARSER_OBJ = $(PARSER_SRC:.c=.o)
 
-parser.o: src/parser.c $(HEADERS)
-	$(CC) -c src/parser.c -I include
+OUTPUT_FILE = 2101_2115.out
 
-student.o: src/student.c $(HEADERS)
-	$(CC) -c src/student.c -I include
+all: $(SERVER_TARGET) $(PARSER_TARGET)
 
-course.o: src/course.c $(HEADERS)
-	$(CC) -c src/course.c -I include
+$(SERVER_TARGET): $(SERVER_OBJ)
+	$(CC) -o $(SERVER_TARGET) $(SERVER_OBJ)
 
-# Clean target to remove compiled files
+$(PARSER_TARGET): $(PARSER_OBJ)
+	$(CC) -o $(PARSER_TARGET) $(PARSER_OBJ)
+
+%.o: %.c
+	$(CC) -c $<
+
+run-server: $(SERVER_TARGET)
+	./$(SERVER_TARGET)
+
+run-client: $(PARSER_TARGET)
+	./$(PARSER_TARGET) input.txt > $(OUTPUT_FILE)
+
 clean:
-	rm -f *.o $(TARGET) 2101_2115.out
+	rm -f *.o $(SERVER_TARGET) $(PARSER_TARGET) $(OUTPUT_FILE)

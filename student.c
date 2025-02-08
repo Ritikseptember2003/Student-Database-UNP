@@ -1,5 +1,5 @@
-#include "../include/student.h"
-#include "../include/course.h"
+#include "student.h"
+#include "course.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -14,6 +14,8 @@ StudentDB* create_student_db() {
     }
     db->head = NULL;
     db->tail = NULL;
+    db->student_count = 0;
+    pthread_mutex_init(&db->mutex, NULL);
     return db;
 }
 
@@ -38,6 +40,7 @@ void add_student(StudentDB *db, int roll_no, const char *name, float cgpa, int n
         printf("Student database doesn't exist\n");
         return;
     }
+
 
     if (find_student(db, roll_no)) {
         printf("Student already exists\n");
@@ -66,13 +69,18 @@ void add_student(StudentDB *db, int roll_no, const char *name, float cgpa, int n
         new_student->prev = db->tail;
         db->tail = new_student;
     }
+
+    db->student_count++; 
+
 }
 
 void modify_student(StudentDB* db, int roll_no, float new_cgpa) {
     if (!db) {
-        printf("Student doesn't exist\n");
+        printf("Student database doesn't exist\n");
         return;
     }
+
+
     Student *student = find_student(db, roll_no);
     if (student) {
         student->student_info.cgpa = new_cgpa;
@@ -110,4 +118,6 @@ void delete_student(StudentDB* db, int roll_no) {
         course = next_course;
     }
     free(student);
+    db->student_count--; 
+
 }
