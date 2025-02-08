@@ -1,5 +1,5 @@
-#include "../include/course.h"
-#include "../include/student.h"
+#include "student.h"
+#include "course.h"
 #include <stdio.h>
 #include <stdlib.h>
 
